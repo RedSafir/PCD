@@ -16,6 +16,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.uic import loadUi
+from matplotlib import pyplot as plt
 import numpy as np
 import math 
 
@@ -32,7 +33,11 @@ class ShowImage(QMainWindow):
         self.actionContras_streching.triggered.connect(self.contrasstreching)
         self.actionNegative.triggered.connect(self.negative)
         self.actionBiner.triggered.connect(self.biner)
-    
+        self.actionHistogram_greyscale.triggered.connect(self.greyHistogram)
+        self.actionHistogram_RGB.triggered.connect(self.rgbHistogram)
+        self.actionHistogram_Equalization.triggered.connect(self.equalzationHistogram)
+        self.actionTranslasi.triggered.connect(self.translasi)
+
     # fungsi menampilkan citra normal
     def fungsi(self):
         self.Image = cv2.imread('../imgs/dumy-img-1.jpg')
@@ -164,6 +169,81 @@ class ShowImage(QMainWindow):
 
                 self.Image.itemset((i, j), b)
         
+        self.displayImage(2)
+
+    # menampilkan tampilan histogram greyscale
+    def greyHistogram(self):
+        try :
+            H,W = self.Image.shape[:2]
+            gray = np.zeros((H,W), np.uint8)
+            for i in range(H):
+                for j in range(W):
+                    # mengubah citra ke greyscale
+                    # f(x,y) = 0.299R + 0.587G + 0.114B
+                    gray[i,j] = np.clip(0.299 * self.Image[i, j, 0]+
+                                        0.587 * self.Image[i, j, 1]+
+                                        0.114 * self.Image[1, j, 2], 0, 255)
+            self.Image = gray
+        except :
+            self.Image = cv2.imread('../imgs/dumy-img-1.jpg', cv2.IMREAD_GRAYSCALE)
+        
+        self.displayImage(2)
+
+        # untuk menampilkan histogram, menggunakan heist
+        plt.hist(self.Image.ravel(), 255, [0, 255])
+        plt.show()
+
+    # menampilkan histogram RGB
+    def rgbHistogram(self):
+        # membuat self.Image menjadi BGR lagi
+        self.Image = cv2.imread('../imgs/dumy-img-1.jpg')
+
+        # nilai yang akan di tampilkan pada historgam
+        color = ('b', 'g', 'r') 
+
+        # i adalah index dari color; col adalah value 'b', 'g', 'r' nya
+        for i,col in enumerate(color):
+            # system perhitungan cv2
+            histo = cv2.calcHist([self.Image], [i], None, [256], [0,256])
+            # ploting pada histogram
+            plt.plot(histo, color = col) 
+            # mengatur batas sumbu x
+            plt.xlim([0,256])
+        
+        # membuat visualisasi dari histogram
+        plt.show()
+        self.displayImage(2)
+
+    # meratakan histogram
+    def equalzationHistogram(self):
+        # membuat self.Image menjadi BGR lagi
+        self.Image = cv2.imread('../imgs/dumy-img-1.jpg')
+
+        hist, bins = np.histogram(self.Image.flatten(), 256, [0, 256]) #mengubah array img menjadi 1 dimensi
+        cdf = hist.cumsum() # menentukan jumlah kumulatif array pada bagian tertentu
+        cdf_normalized = cdf * hist.max() / cdf.max() # untuk normalisasi
+        cdf_m = np.ma.masked_equal(cdf, 0) # memasking nilai array dengan yang di berikan
+        cdf_m = (cdf_m - cdf_m.min()) * 255 / (cdf_m.max() - cdf_m.min()) # melakukan perhitungan
+        cdf = np.ma.filled(cdf_m, 0).astype('uint8') # mengisi array dengan nilai skalar
+        self.Image = cdf[self.Image] # mengganti nilai array image menjadi nilai komulatif
+
+        self.displayImage(2)
+        
+        # ploting histogram
+        plt.plot(cdf_normalized, color='b') # melakukan ploting sesuai normalisasi
+        plt.hist(self.Image.flatten(), 256, [0, 256], color='r') # membuat histogram sesuai dengan nilai array gambar
+        plt.xlim([0, 256]) # mengatur batas sumbu x
+        plt.legend(('cdf', 'histogram'), loc='upper left') # membuat text di histogramnya
+        plt.show()
+
+    # mentranslasikan gambar
+    def translasi(self):
+        h, w = self.Image.shape[:2] # membagi dan mendapatkan height dan width
+        quarter_h,quarter_w = h/4, w/4 # menentukan bakal kaya gimana ntr translasiinya
+        T = np.float32([[1,0,quarter_w],[0,1,quarter_h]])
+        img = cv2.warpAffine(self.Image, T, (w,h))
+
+        self.Image = img
         self.displayImage(2)
 
     # mengatur gambar di windows
