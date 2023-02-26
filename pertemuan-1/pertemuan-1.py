@@ -18,20 +18,27 @@ from PyQt5.QtWidgets import *
 from PyQt5.uic import loadUi
 import numpy as np
 import math 
+import tkinter as tk
+from tkinter import filedialog
 
 class ShowImage(QMainWindow):
     def __init__(self):
         super(ShowImage, self).__init__()
         loadUi("GUI.ui", self)
         self.Image = None
-        # akan membaca bila action di tekan
+        # Button
         self.button_loadCitra.clicked.connect(self.fungsi)
         self.button_prosesCitra.clicked.connect(self.greyscale)
-        self.actionOperasi_pencerahan.triggered.connect(self.brightness)
+
+        # Trigger
+        # self.actionOperasi_pencerahan.triggered.connect(self.brightness)
+        self.slidder_brightnes.valueChanged.connect(self.brightness)
         self.actionSimple_contras.triggered.connect(self.contras)
         self.actionContras_streching.triggered.connect(self.contrasstreching)
         self.actionNegative.triggered.connect(self.negative)
         self.actionBiner.triggered.connect(self.biner)
+        self.actionSave.triggered.connect(self.saveClick)
+        self.actionOpen.triggered.connect(self.openClick)
     
     # fungsi menampilkan citra normal
     def fungsi(self):
@@ -53,7 +60,8 @@ class ShowImage(QMainWindow):
             self.Image = gray
         except :
             self.Image = cv2.imread('../imgs/dumy-img-1.jpg', cv2.IMREAD_GRAYSCALE)
-        
+
+        print(self.Image)
         self.displayImage(2)
 
     # fungsi greyscale tapi di cerahin
@@ -66,7 +74,7 @@ class ShowImage(QMainWindow):
             pass
 
         H,W = self.Image.shape[:2]
-        BRIGHTNES = 80
+        BRIGHTNES = self.slidder_brightnes.value()
         for i in range(H):
             for j in range(W):
                 # nilai pixel greyscale di cari
@@ -76,7 +84,7 @@ class ShowImage(QMainWindow):
                 b = np.clip(a + BRIGHTNES, 0, 255)
                 self.Image.itemset((i, j), b)
         
-        self.displayImage(2)
+        self.displayImage()
     
     # fungsi mengatur kontras
     def contras(self):
@@ -96,7 +104,7 @@ class ShowImage(QMainWindow):
                 b = np.clip(a * CONTRAS, 0, 255)
                 self.Image.itemset((i, j), b)
         
-        self.displayImage(2)
+        self.displayImage()
     
     # fungsi mengatur kontras streching
     def contrasstreching(self):
@@ -114,10 +122,11 @@ class ShowImage(QMainWindow):
             for j in range(W):
                 a = self.Image.item(i, j)
                 # merata-ratakan nilai kontras
+                
                 b = float(a - minV) / (maxV - minV) * 255
                 self.Image.itemset((i, j), b)
         
-        self.displayImage(2)
+        self.displayImage()
 
     # fungsi mengatur gambar negative
     def negative(self):
@@ -137,7 +146,7 @@ class ShowImage(QMainWindow):
                 b = math.ceil(MAXIMUM_INTENSITY - a)
                 self.Image.itemset((i, j), b)
         
-        self.displayImage(2)
+        self.displayImage()
     
     # fungsi mengatur gambar biner
     def biner(self):
@@ -164,8 +173,20 @@ class ShowImage(QMainWindow):
 
                 self.Image.itemset((i, j), b)
         
-        self.displayImage(2)
+        self.displayImage()
 
+    def saveClick(self):
+        flname, filter = QFileDialog.getSaveFileName(self, "SaveFile", "C:\\", "Image Files (*.jpg)")
+        if flname:
+            cv2.imwrite(flname, self.Image)
+        else :
+            print("error")
+
+    def openClick(self):
+        filename = filedialog.askopenfilename()
+        self.Image = cv2.imread(filename)
+        self.displayImage()
+    
     # mengatur gambar di windows
     def displayImage(self, windows=1):
         qformat = QImage.Format_Indexed8

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1035</width>
-    <height>600</height>
+    <width>996</width>
+    <height>651</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -72,14 +72,46 @@
      <string/>
     </property>
    </widget>
+   <widget class="QSlider" name="slidder_brightnes">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>570</y>
+      <width>311</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>50</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <property name="tickPosition">
+     <enum>QSlider::TicksBelow</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>570</y>
+      <width>55</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Brightnes</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1035</width>
-     <height>22</height>
+     <width>996</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOperasi_Titik">
@@ -92,7 +124,15 @@
     <addaction name="actionNegative"/>
     <addaction name="actionBiner"/>
    </widget>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionSave"/>
+    <addaction name="actionOpen"/>
+   </widget>
    <addaction name="menuOperasi_Titik"/>
+   <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOperasi_pencerahan">
@@ -118,6 +158,16 @@
   <action name="actionBiner">
    <property name="text">
     <string>Biner</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open</string>
    </property>
   </action>
  </widget>

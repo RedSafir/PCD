@@ -246,6 +246,22 @@ class ShowImage(QMainWindow):
         self.Image = img
         self.displayImage(2)
 
+    def rotasi(self, degree):
+        h, w = self.Image.shape[:2] # mendapatkan bentuk width dan height nya gambar
+        rotationMatrix = cv2.getRotationMatrix2D((w / 2, h / 2), degree, .7) # jari-jari di kali derajat
+
+        cos = np.abs(rotationMatrix[0, 0])
+        sin = np.abs(rotationMatrix[0, 1])
+
+        nW = int((h * sin) + (w * cos))
+        nH = int((h * cos) + (w * sin))
+
+        rotationMatrix[0, 2] += (nW / 2) - w / 2
+        rotationMatrix[1, 2] += (nH / 2) - h / 2
+        rot_image = cv2.warpAffine(self.Image, rotationMatrix, (h, w))
+
+        self.Image = rot_image
+
     # mengatur gambar di windows
     def displayImage(self, windows=1):
         qformat = QImage.Format_Indexed8
