@@ -19,15 +19,20 @@ from PyQt5.uic import loadUi
 from matplotlib import pyplot as plt
 import numpy as np
 import math 
+import tkinter as tk
+from tkinter import filedialog
 
 class ShowImage(QMainWindow):
     def __init__(self):
         super(ShowImage, self).__init__()
         loadUi("GUI.ui", self)
         self.Image = None
-        # akan membaca bila action di tekan
+
+        # Button 
         self.button_loadCitra.clicked.connect(self.fungsi)
         self.button_prosesCitra.clicked.connect(self.greyscale)
+
+        # operasi Titik
         self.actionOperasi_pencerahan.triggered.connect(self.brightness)
         self.actionSimple_contras.triggered.connect(self.contras)
         self.actionContras_streching.triggered.connect(self.contrasstreching)
@@ -36,7 +41,33 @@ class ShowImage(QMainWindow):
         self.actionHistogram_greyscale.triggered.connect(self.greyHistogram)
         self.actionHistogram_RGB.triggered.connect(self.rgbHistogram)
         self.actionHistogram_Equalization.triggered.connect(self.equalzationHistogram)
+
+        # Operasi Geometri
         self.actionTranslasi.triggered.connect(self.translasi)
+        self.action90_Derajat.triggered.connect(self.rotasi90derajat)
+        self.action_90_Derajat.triggered.connect(self.rotasiMin90derajat) 
+        self.action45_Derajat.triggered.connect(self.rotasi45derajat)
+        self.action_45_Derajat.triggered.connect(self.rotasiMin45derajat)
+        self.action180_Derajat.triggered.connect(self.rotasi180derajat)
+        self.action200.triggered.connect(self.zoom200)
+        self.action300.triggered.connect(self.zoom300)
+        self.action400.triggered.connect(self.zoom400)
+        self.action75.triggered.connect(self.zoom75)
+        self.action50.triggered.connect(self.zoom50)
+        self.action25.triggered.connect(self.zoom25)
+        self.actionCrop.triggered.connect(self.cropImage)
+
+        # Aritmatika
+        self.actionPertambahan_2.triggered.connect(self.pertambahan)
+        self.actionPengurangan.triggered.connect(self.pengurangan)
+        self.actionPerkalian.triggered.connect(self.perkalian)
+        self.actionPembagian.triggered.connect(self.pembagian)
+        
+        # Boolean
+        self.actionAND.triggered.connect(self.opand)
+        self.actionOR.triggered.connect(self.opor)
+        self.actionXOR.triggered.connect(self.opxor)
+
 
     # fungsi menampilkan citra normal
     def fungsi(self):
@@ -246,6 +277,22 @@ class ShowImage(QMainWindow):
         self.Image = img
         self.displayImage(2)
 
+    # Rotasi
+    def rotasi90derajat(self):
+        self.rotasi(90)
+    
+    def rotasiMin90derajat(self):
+        self.rotasi(-90)
+
+    def rotasi45derajat(self):
+        self.rotasi(45)
+
+    def rotasiMin45derajat(self):
+        self.rotasi(-45)
+    
+    def rotasi180derajat(self):
+        self.rotasi(180)
+
     def rotasi(self, degree):
         h, w = self.Image.shape[:2] # mendapatkan bentuk width dan height nya gambar
         rotationMatrix = cv2.getRotationMatrix2D((w / 2, h / 2), degree, .7) # jari-jari di kali derajat
@@ -261,6 +308,117 @@ class ShowImage(QMainWindow):
         rot_image = cv2.warpAffine(self.Image, rotationMatrix, (h, w))
 
         self.Image = rot_image
+        self.displayImage(2)
+
+    # Zoom in & Out
+    def zoom200(self):
+        self.zoominout(2, "200%")
+
+    def zoom300(self):
+        self.zoominout(3, "300%")
+
+    def zoom400(self):
+        self.zoominout(4, "400%")
+    
+    def zoom75(self):
+        self.zoominout(.75, "75%")
+
+    def zoom50(self):
+        self.zoominout(.5, "50%")
+
+    def zoom25(self):
+        self.zoominout(.25, "25%")
+
+    def zoominout(self, skala, keterangan):
+        resize_img = cv2.resize(self.Image, None, fx=skala, fy=skala, interpolation=cv2.INTER_CUBIC)
+        cv2.imshow('Zoom ' + keterangan, resize_img)
+        cv2.waitKey()
+
+    # Crop Image
+    def cropImage(self):
+        H, W = self.Image.shape[:2]
+
+        try:
+            crop_atas_vertical = (self.crop_atas_horizontal.value() / 100) * H
+            crop_atas_horizontal = ((100 - self.crop_atas_vertical.value()) / 100) * W
+            crop_bawah_vertical = H - (self.crop_bawah_vertical.value() / 100) * H
+            crop_bawah_horizontal = W - (self.crop_bawah_horizontal.value() / 100) * W
+        
+            cropped_image = self.Image[int(crop_atas_horizontal):int(crop_bawah_vertical), int(crop_atas_vertical):int(crop_bawah_horizontal)]
+            cv2.imshow("cropped", cropped_image)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+        except :
+            pass
+    
+    # Aritmatika
+    def aritmatika(self):
+        self.Image1 = cv2.cvtColor(self.Image, cv2.COLOR_BGR2GRAY)
+        H, W = self.Image1.shape[:2]
+        img = cv2.cvtColor(self.open(), cv2.COLOR_BGR2GRAY)
+        self.Image2 = cv2.resize(img, (W, H))
+        
+    def pertambahan(self):
+        self.aritmatika()
+
+        hasil = self.Image1 + self.Image2
+        cv2.imshow("hasil pertambahan", hasil) 
+
+    def pengurangan(self):
+        self.aritmatika()
+
+        hasil = self.Image1 - self.Image2
+        cv2.imshow("hasil pengurangan", hasil) 
+
+    def perkalian(self):
+        self.aritmatika()
+
+        hasil = self.Image1 * self.Image2
+        cv2.imshow("hasil pengurangan", hasil) 
+
+    def pembagian(self):
+        self.aritmatika()
+
+        hasil = self.Image1 / self.Image2
+        cv2.imshow("hasil pengurangan", hasil) 
+    
+    # Boolean
+    def boolean(self):
+        self.Image1 = cv2.cvtColor(self.Image, cv2.COLOR_BGR2RGB)
+        H, W = self.Image1.shape[:2]
+        img = cv2.cvtColor(self.open(), cv2.COLOR_BGR2RGB)
+        self.Image2 = cv2.resize(img, (W, H))
+
+    def opand(self):
+        self.boolean()
+
+        hasil = cv2.bitwise_and(self.Image1, self.Image2)
+        cv2.imshow("hasil AND", hasil) 
+
+    def opor(self):
+        self.boolean()
+
+        hasil = cv2.bitwise_or(self.Image1, self.Image2)
+        cv2.imshow("hasil OR", hasil) 
+
+    def opxor(self):
+        self.boolean()
+
+        hasil = cv2.bitwise_xor(self.Image1, self.Image2)
+        cv2.imshow("hasil XOR", hasil) 
+
+    # File Composer
+    def save(self):
+        flname, filter = QFileDialog.getSaveFileName(self, "SaveFile", "C:\\", "Image Files (*.jpg)")
+        if flname:
+            cv2.imwrite(flname, self.Image)
+        else :
+            print("error")
+
+    def open(self):
+        filename = filedialog.askopenfilename()
+        img = cv2.imread(filename)
+        return img
 
     # mengatur gambar di windows
     def displayImage(self, windows=1):
@@ -292,6 +450,6 @@ class ShowImage(QMainWindow):
 # mempersiapkan tampilan widows
 app = QtWidgets.QApplication(sys.argv)
 window = ShowImage()
-window.setWindowTitle("Pertemuan 1")
+window.setWindowTitle("Pertemuan 2")
 window.show()
 sys.exit(app.exec_())

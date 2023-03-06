@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1007</width>
-    <height>562</height>
+    <width>1019</width>
+    <height>661</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,8 +17,8 @@
    <widget class="QPushButton" name="button_loadCitra">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>470</y>
+      <x>40</x>
+      <y>510</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -46,8 +46,8 @@
    <widget class="QPushButton" name="button_prosesCitra">
     <property name="geometry">
      <rect>
-      <x>580</x>
-      <y>470</y>
+      <x>550</x>
+      <y>500</y>
       <width>91</width>
       <height>31</height>
      </rect>
@@ -72,14 +72,96 @@
      <string/>
     </property>
    </widget>
+   <widget class="QSlider" name="crop_atas_horizontal">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>30</y>
+      <width>431</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <property name="tickPosition">
+     <enum>QSlider::TicksBelow</enum>
+    </property>
+   </widget>
+   <widget class="QSlider" name="crop_atas_vertical">
+    <property name="geometry">
+     <rect>
+      <x>490</x>
+      <y>60</y>
+      <width>22</width>
+      <height>371</height>
+     </rect>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="value">
+     <number>99</number>
+    </property>
+    <property name="sliderPosition">
+     <number>99</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+    <property name="tickPosition">
+     <enum>QSlider::TicksBelow</enum>
+    </property>
+   </widget>
+   <widget class="QSlider" name="crop_bawah_horizontal">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>450</y>
+      <width>421</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::RightToLeft</enum>
+    </property>
+    <property name="value">
+     <number>0</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <property name="tickPosition">
+     <enum>QSlider::TicksAbove</enum>
+    </property>
+   </widget>
+   <widget class="QSlider" name="crop_bawah_vertical">
+    <property name="geometry">
+     <rect>
+      <x>980</x>
+      <y>60</y>
+      <width>22</width>
+      <height>371</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+    <property name="tickPosition">
+     <enum>QSlider::TicksAbove</enum>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1007</width>
-     <height>22</height>
+     <width>1019</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOperasi_Titik">
@@ -104,11 +186,60 @@
     <property name="title">
      <string>Operasi Geometri</string>
     </property>
+    <widget class="QMenu" name="menuRotasi">
+     <property name="title">
+      <string>Rotasi</string>
+     </property>
+     <addaction name="action90_Derajat"/>
+     <addaction name="action_90_Derajat"/>
+     <addaction name="action45_Derajat"/>
+     <addaction name="action_45_Derajat"/>
+     <addaction name="action180_Derajat"/>
+    </widget>
+    <widget class="QMenu" name="menuZoom_Out">
+     <property name="title">
+      <string>Zoom Out</string>
+     </property>
+     <addaction name="action200"/>
+     <addaction name="action300"/>
+     <addaction name="action400"/>
+    </widget>
+    <widget class="QMenu" name="menuZoom_In">
+     <property name="title">
+      <string>Zoom In</string>
+     </property>
+     <addaction name="action75"/>
+     <addaction name="action50"/>
+     <addaction name="action25"/>
+    </widget>
     <addaction name="actionTranslasi"/>
+    <addaction name="menuRotasi"/>
+    <addaction name="menuZoom_Out"/>
+    <addaction name="menuZoom_In"/>
+    <addaction name="actionCrop"/>
+   </widget>
+   <widget class="QMenu" name="menuAritmatika">
+    <property name="title">
+     <string>Operasi Aritmatika</string>
+    </property>
+    <addaction name="actionPertambahan_2"/>
+    <addaction name="actionPengurangan"/>
+    <addaction name="actionPerkalian"/>
+    <addaction name="actionPembagian"/>
+   </widget>
+   <widget class="QMenu" name="menuBoolean">
+    <property name="title">
+     <string>Operasi Boolean</string>
+    </property>
+    <addaction name="actionAND"/>
+    <addaction name="actionOR"/>
+    <addaction name="actionXOR"/>
    </widget>
    <addaction name="menuOperasi_Titik"/>
    <addaction name="menuHistogram"/>
    <addaction name="menuOperasi_Geometri"/>
+   <addaction name="menuAritmatika"/>
+   <addaction name="menuBoolean"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOperasi_pencerahan">
@@ -154,6 +285,106 @@
   <action name="actionTranslasi">
    <property name="text">
     <string>Translasi</string>
+   </property>
+  </action>
+  <action name="action90_Derajat">
+   <property name="text">
+    <string>90 Derajat</string>
+   </property>
+  </action>
+  <action name="action_90_Derajat">
+   <property name="text">
+    <string>-90 Derajat</string>
+   </property>
+  </action>
+  <action name="action45_Derajat">
+   <property name="text">
+    <string>45 Derajat</string>
+   </property>
+  </action>
+  <action name="action_45_Derajat">
+   <property name="text">
+    <string>-45 Derajat</string>
+   </property>
+  </action>
+  <action name="action180_Derajat">
+   <property name="text">
+    <string>180 Derajat</string>
+   </property>
+  </action>
+  <action name="action200">
+   <property name="text">
+    <string>200%</string>
+   </property>
+  </action>
+  <action name="action300">
+   <property name="text">
+    <string>300%</string>
+   </property>
+  </action>
+  <action name="action400">
+   <property name="text">
+    <string>400%</string>
+   </property>
+  </action>
+  <action name="action75">
+   <property name="text">
+    <string>75%</string>
+   </property>
+  </action>
+  <action name="action50">
+   <property name="text">
+    <string>50%</string>
+   </property>
+  </action>
+  <action name="action25">
+   <property name="text">
+    <string>25%</string>
+   </property>
+  </action>
+  <action name="actionPertambahan">
+   <property name="text">
+    <string>Pertambahan</string>
+   </property>
+  </action>
+  <action name="actionCrop">
+   <property name="text">
+    <string>Crop</string>
+   </property>
+  </action>
+  <action name="actionPertambahan_2">
+   <property name="text">
+    <string>Pertambahan</string>
+   </property>
+  </action>
+  <action name="actionPengurangan">
+   <property name="text">
+    <string>Pengurangan</string>
+   </property>
+  </action>
+  <action name="actionPerkalian">
+   <property name="text">
+    <string>Perkalian</string>
+   </property>
+  </action>
+  <action name="actionPembagian">
+   <property name="text">
+    <string>Pembagian</string>
+   </property>
+  </action>
+  <action name="actionAND">
+   <property name="text">
+    <string>AND</string>
+   </property>
+  </action>
+  <action name="actionOR">
+   <property name="text">
+    <string>OR</string>
+   </property>
+  </action>
+  <action name="actionXOR">
+   <property name="text">
+    <string>XOR</string>
    </property>
   </action>
  </widget>
