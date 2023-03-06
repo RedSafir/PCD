@@ -32,6 +32,10 @@ class ShowImage(QMainWindow):
         self.button_loadCitra.clicked.connect(self.fungsi)
         self.button_prosesCitra.clicked.connect(self.greyscale)
 
+        # File Action
+        self.actionSave.triggered.connect(self.save)
+        self.actionLoad.triggered.connect(self.openClick)
+
         # operasi Titik
         self.actionOperasi_pencerahan.triggered.connect(self.brightness)
         self.actionSimple_contras.triggered.connect(self.contras)
@@ -419,6 +423,10 @@ class ShowImage(QMainWindow):
         filename = filedialog.askopenfilename()
         img = cv2.imread(filename)
         return img
+
+    def openClick(self):
+        self.Image = self.open()
+        self.displayImage()
 
     # mengatur gambar di windows
     def displayImage(self, windows=1):

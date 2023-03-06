@@ -235,6 +235,14 @@
     <addaction name="actionOR"/>
     <addaction name="actionXOR"/>
    </widget>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionSave"/>
+    <addaction name="actionLoad"/>
+   </widget>
+   <addaction name="menuFile"/>
    <addaction name="menuOperasi_Titik"/>
    <addaction name="menuHistogram"/>
    <addaction name="menuOperasi_Geometri"/>
@@ -385,6 +393,16 @@
   <action name="actionXOR">
    <property name="text">
     <string>XOR</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionLoad">
+   <property name="text">
+    <string>Load</string>
    </property>
   </action>
  </widget>
