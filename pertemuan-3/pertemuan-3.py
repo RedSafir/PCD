@@ -72,6 +72,19 @@ class ShowImage(QMainWindow):
         self.actionOR.triggered.connect(self.opor)
         self.actionXOR.triggered.connect(self.opxor)
 
+        # Operasi Spasial
+        self.actionKarnel1.triggered.connect(self.konvolusi1)   
+        self.actionKarnel2.triggered.connect(self.konvolusi2)   
+        self.actionMeanFilter_2.triggered.connect(self.meanfilter)   
+        self.actionGaussianFilter.triggered.connect(self.gaussianfilter)   
+        self.actionKarnel_i.triggered.connect(self.sharpening_i)   
+        self.actionKarnel_ii.triggered.connect(self.sharpening_ii)   
+        self.actionKarnel_iii .triggered.connect(self.sharpening_iii)   
+        self.actionKarnel_iv.triggered.connect(self.sharpening_iv)   
+        self.actionKarnel_v.triggered.connect(self.sharpening_v)   
+        self.actionKarnel_vi.triggered.connect(self.sharpening_vi)   
+        self.actionLaplace.triggered.connect(self.laplacefilter)   
+
 
     # fungsi menampilkan citra normal
     def fungsi(self):
@@ -433,6 +446,304 @@ class ShowImage(QMainWindow):
     def openClick(self):
         self.Image = self.open()
         self.displayImage()
+
+    # convolusi
+    # 1. baca ukuran tinggi dan lebar citra
+    # 2. baca ukuran tinggi dan lebar karnel
+    # (cara menentukan titik tengahnya adalah membagi tinggi dan lebar lalu di bagi dua dan di bulatkan ke bawah)
+    # H = ukuran tinggi karnel / 2
+    # W = ukurang lebar karnel / 2
+    def math_konvolusi(self, arrycitra, arrykarnel):
+        # baca ukuran dimensi citra
+        H_citra, W_citra = arrycitra.shape
+
+        # baca ukuran dimensi karnel
+        H_karnel, W_karnel = arrykarnel.shape
+
+        # meenutukan titik tengah
+        H = H_karnel // 2
+        W = W_karnel // 2   
+
+        out = np.zeros((H_citra, W_citra))
+
+        # menggeser karnel konvolusi
+        for i in range(H + 1, H_citra - H):
+            for j in range(W + 1, W_citra - W):
+                sum = 0
+                for k in range(-H, H):
+                    for l in range(-W, W):
+                        citra_value = arrycitra[i + k, j + l]
+                        kernel_value = arrykarnel[H + k, W + l]
+                        sum += citra_value * kernel_value
+                    out[i, j] = sum
+        
+        return out
+    
+    def konvolusi1(self):
+        # mengubah self.image menjadi greyscale
+        img = cv2.imread("../imgs/dumy-img-1.jpg")
+
+        # ubah ke gray
+        H,W = img.shape[:2]
+        gray = np.zeros((H,W), np.uint8)
+        for i in range(H):
+            for j in range(W):
+                # mengubah citra ke greyscale
+                # f(x,y) = 0.299R + 0.587G + 0.114B
+                gray[i,j] = np.clip(0.299 * img[i, j, 0]+
+                                    0.587 * img[i, j, 1]+
+                                    0.114 * img[1, j, 2], 0, 255)
+        IMGGREY = gray
+
+        # analisisi citra sebelum di convolusi
+        plt.imshow(IMGGREY, cmap='gray', interpolation='bicubic')
+        plt.xticks([]), plt.yticks([])
+        plt.title('Citra Asli')
+
+        KERNEL = np.array([[1,1,1], 
+                          [1,1,1],
+                          [1,1,1]])
+        
+        # lakukan konvolusi dengan karnel dan image yang sudah di buat grey
+        hasil = self.math_konvolusi(IMGGREY, KERNEL)
+
+        # analisis citra sesudah di konvolusi
+        plt.figure()
+        plt.imshow(hasil, cmap='gray', interpolation='bicubic')
+        plt.xticks([]), plt.yticks([])
+        plt.title('Hasil Konvolusi')
+
+        plt.show()
+        cv2.waitKey()
+
+    def konvolusi2(self):
+        # mengubah self.image menjadi greyscale
+        img = cv2.imread("../imgs/dumy-img-1.jpg")
+
+        # ubah ke gray
+        H,W = img.shape[:2]
+        gray = np.zeros((H,W), np.uint8)
+        for i in range(H):
+            for j in range(W):
+                # mengubah citra ke greyscale
+                # f(x,y) = 0.299R + 0.587G + 0.114B
+                gray[i,j] = np.clip(0.299 * img[i, j, 0]+
+                                    0.587 * img[i, j, 1]+
+                                    0.114 * img[1, j, 2], 0, 255)
+        IMGGREY = gray
+
+        # analisisi citra sebelum di convolusi
+        plt.imshow(IMGGREY, cmap='gray', interpolation='bicubic')
+        plt.xticks([]), plt.yticks([])
+        plt.title('Citra Asli')
+
+        KERNEL = np.array([[6,0,-6], 
+                          [6,1,-6],
+                          [6,0,-6]])
+        
+        # lakukan konvolusi dengan karnel dan image yang sudah di buat grey
+        hasil = self.math_konvolusi(IMGGREY, KERNEL)
+
+        # analisis citra sesudah di konvolusi
+        plt.figure()
+        plt.imshow(hasil, cmap='gray', interpolation='bicubic')
+        plt.xticks([]), plt.yticks([])
+        plt.title('Hasil Konvolusi')
+
+        plt.show()
+        cv2.waitKey()
+    
+    def meanfilter(self):
+        # Load citra
+        img = cv2.imread("../imgs/dumy-img-1.jpg")
+
+        # ubah ke gray
+        H,W = img.shape[:2]
+        gray = np.zeros((H,W), np.uint8)
+        for i in range(H):
+            for j in range(W):
+                # mengubah citra ke greyscale
+                # f(x,y) = 0.299R + 0.587G + 0.114B
+                gray[i,j] = np.clip(0.299 * img[i, j, 0]+
+                                    0.587 * img[i, j, 1]+
+                                    0.114 * img[1, j, 2], 0, 255)
+        IMGGREY = gray
+
+        # analisisi citra sebelum di convolusi
+        plt.imshow(IMGGREY, cmap='gray', interpolation='bicubic')
+        plt.xticks([]), plt.yticks([])
+        plt.title('Citra Asli')
+
+        # membuat kernel 3x3
+        KERNEL3X3 = np.array([[1/9, 1/9, 1/9], 
+                          [1/9, 1/9, 1/9],
+                          [1/9, 1/9, 1/9]])
+        
+        # lakukan konvolusi dengan karnel dan image yang sudah di buat grey
+        hasil3x3 = self.math_konvolusi(IMGGREY, KERNEL3X3)
+
+        # analisis citra sesudah di konvolusi
+        plt.figure()
+        plt.imshow(hasil3x3, cmap='gray', interpolation='bicubic')
+        plt.xticks([]), plt.yticks([])
+        plt.title('Hasil Konvolusi 3x3')
+
+        # membuat kernel 3x3
+        KERNEL2X2 = np.array([[1 / 4, 1 / 4],
+                               [1 / 4, 1 / 4]])
+        
+        # lakukan konvolusi dengan karnel dan image yang sudah di buat grey
+        hasil2x2 = cv2.filter2D(IMGGREY, -1, KERNEL2X2)
+
+        # analisis citra sesudah di konvolusi
+        plt.figure()
+        plt.imshow(hasil2x2, cmap='gray', interpolation='bicubic')
+        plt.xticks([]), plt.yticks([])
+        plt.title('Hasil Konvolusi 2x2')
+
+        plt.show()
+        cv2.waitKey()
+
+    def gaussianfilter(self):
+        # Load gambar
+        img = cv2.imread("../imgs/salt-and-papper-img.jpg")
+
+        # ubah ke gray
+        H,W = img.shape[:2]
+        gray = np.zeros((H,W), np.uint8)
+        for i in range(H):
+            for j in range(W):
+                # mengubah citra ke greyscale
+                # f(x,y) = 0.299R + 0.587G + 0.114B
+                gray[i,j] = np.clip(0.299 * img[i, j, 0]+
+                                    0.587 * img[i, j, 1]+
+                                    0.114 * img[1, j, 2], 0, 255)
+        IMGGREY = gray
+
+        # analisisi citra sebelum di convolusi
+        plt.imshow(IMGGREY, cmap='gray', interpolation='bicubic')
+        plt.xticks([]), plt.yticks([])
+        plt.title('Citra Asli')
+
+        # buat kernel
+        KERNEL = (1.0 / 345) * np.array([[1, 5, 7, 5, 1],
+                                         [5, 20, 33, 20, 5],
+                                         [7, 33, 55, 33, 7],
+                                         [5, 20, 33, 20, 5],
+                                         [1, 5, 7, 5, 1]])
+        
+        # lakukan konvolusi dengan karnel dan image yang sudah di buat grey
+        hasil = self.math_konvolusi(IMGGREY, KERNEL)
+
+        # analisis citra sesudah di konvolusi
+        plt.imshow(hasil, cmap='gray', interpolation='bicubic')
+        plt.xticks([]), plt.yticks([])
+        plt.title('Hasil Konvolusi gaussian')
+
+        plt.show()
+        cv2.waitKey()
+    
+    def sharpening_i(self):
+        KERNEL = np.array([[-1, -1, -1],
+                            [-1, 8, -1],
+                           [-1, -1, -1]])
+        self.show_sharpening(KERNEL)
+
+    def sharpening_ii(self):
+        KERNEL = np.array([[-1, -1, -1],
+                           [-1, 9, -1],
+                           [-1, -1, -1]])
+        self.show_sharpening(KERNEL)
+
+    def sharpening_iii(self):
+        KERNEL = np.array([[0, -1, 0],
+                           [-1, 5, -1],
+                           [0, -1, 0]])
+        self.show_sharpening(KERNEL)
+
+    def sharpening_iv(self):
+        KERNEL = np.array([[1, -2, 1],
+                           [-2, 5, -2],
+                           [1, -2, 1]])
+        self.show_sharpening(KERNEL)
+
+    def sharpening_v(self):
+        KERNEL = np.array([[1, -2, 1],
+                           [-2, 4, -2],
+                           [1, -2, 1]])
+        self.show_sharpening(KERNEL)
+
+    def sharpening_vi(self):
+        KERNEL = np.array([[0, 1, 0],
+                           [1,-4, 1],
+                           [0, 1, 0]])
+        self.show_sharpening(KERNEL)
+        
+    def show_sharpening(self, KERNEL):
+        # mengubah self.image menjadi greyscale         
+        img = cv2.imread("../imgs/salt-and-papper-img.jpg")
+
+        # ubah ke gray
+        H,W = img.shape[:2]
+        gray = np.zeros((H,W), np.uint8)
+        for i in range(H):
+            for j in range(W):
+                # mengubah citra ke greyscale
+                # f(x,y) = 0.299R + 0.587G + 0.114B
+                gray[i,j] = np.clip(0.299 * img[i, j, 0]+
+                                    0.587 * img[i, j, 1]+
+                                    0.114 * img[1, j, 2], 0, 255)
+        IMGGREY = gray
+
+        # analisisi citra sebelum di convolusi
+        plt.imshow(IMGGREY, cmap='gray', interpolation='bicubic')
+        plt.xticks([]), plt.yticks([])
+        plt.title('Citra Asli')
+        
+        # lakukan konvolusi dengan karnel dan image yang sudah di buat grey
+        hasil = self.math_konvolusi(IMGGREY, KERNEL)
+
+        # analisis citra sesudah di konvolusi
+        plt.figure()
+        plt.imshow(hasil, cmap='gray', interpolation='bicubic')
+        plt.xticks([]), plt.yticks([])
+        plt.title('Hasil Konvolusi')
+
+        plt.show()
+        cv2.waitKey()
+    
+    def laplacefilter(self):
+        # Load gambar
+        IMG = cv2.imread("../imgs/salt-and-papper-img.jpg")
+
+        # analisisi citra sebelum di convolusi
+        plt.imshow(IMG, cmap='gray', interpolation='bicubic')
+        plt.xticks([]), plt.yticks([])
+        plt.title('Citra Asli')
+
+        # ubah ke gray
+        IMGGREY = cv2.cvtColor(IMG, cv2.COLOR_BGR2GRAY)
+
+        # buat kernel
+        kernel_laplace = np.array([[0, 0, -1, 0, 0],
+                                   [0, -1, -2, -1, 0],
+                                   [-1, -2, 16, -2, -1],
+                                   [0, -1, -2, -1, 0],
+                                   [0, 0, -1, 0, 0]], dtype=np.float32)
+        
+        KERNEL = (1.0 / 16) * kernel_laplace
+        
+        # lakukan konvolusi dengan karnel dan image yang sudah di buat grey
+        hasil = self.math_konvolusi(IMGGREY, KERNEL)
+
+        # analisis citra sesudah di konvolusi
+        plt.figure()
+        plt.imshow(hasil, cmap='gray', interpolation='bicubic')
+        plt.xticks([]), plt.yticks([])
+        plt.title('Hasil Konvolusi laplace')
+
+        plt.show()
+        cv2.waitKey()
 
     # mengatur gambar di windows
     def displayImage(self, windows=1):
