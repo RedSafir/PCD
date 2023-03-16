@@ -21,6 +21,7 @@ import numpy as np
 import math 
 import tkinter as tk
 from tkinter import filedialog
+import copy
 
 class ShowImage(QMainWindow):
     def __init__(self):
@@ -84,6 +85,9 @@ class ShowImage(QMainWindow):
         self.actionKarnel_v.triggered.connect(self.sharpening_v)   
         self.actionKarnel_vi.triggered.connect(self.sharpening_vi)   
         self.actionLaplace.triggered.connect(self.laplacefilter)   
+        self.actionMedian_filter.triggered.connect(self.medianfilter)   
+        self.actionMax_Filter.triggered.connect(self.maximumfilter)   
+        self.actionMin_Filter.triggered.connect(self.minimumfilter)   
 
 
     # fungsi menampilkan citra normal
@@ -475,7 +479,7 @@ class ShowImage(QMainWindow):
                         citra_value = arrycitra[i + k, j + l]
                         kernel_value = arrykarnel[H + k, W + l]
                         sum += citra_value * kernel_value
-                    out[i, j] = sum
+                    out[i, j] = copy.copy(sum)
         
         return out
     
@@ -484,16 +488,7 @@ class ShowImage(QMainWindow):
         img = cv2.imread("../imgs/dumy-img-1.jpg")
 
         # ubah ke gray
-        H,W = img.shape[:2]
-        gray = np.zeros((H,W), np.uint8)
-        for i in range(H):
-            for j in range(W):
-                # mengubah citra ke greyscale
-                # f(x,y) = 0.299R + 0.587G + 0.114B
-                gray[i,j] = np.clip(0.299 * img[i, j, 0]+
-                                    0.587 * img[i, j, 1]+
-                                    0.114 * img[1, j, 2], 0, 255)
-        IMGGREY = gray
+        IMGGREY = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         # analisisi citra sebelum di convolusi
         plt.imshow(IMGGREY, cmap='gray', interpolation='bicubic')
@@ -521,16 +516,7 @@ class ShowImage(QMainWindow):
         img = cv2.imread("../imgs/dumy-img-1.jpg")
 
         # ubah ke gray
-        H,W = img.shape[:2]
-        gray = np.zeros((H,W), np.uint8)
-        for i in range(H):
-            for j in range(W):
-                # mengubah citra ke greyscale
-                # f(x,y) = 0.299R + 0.587G + 0.114B
-                gray[i,j] = np.clip(0.299 * img[i, j, 0]+
-                                    0.587 * img[i, j, 1]+
-                                    0.114 * img[1, j, 2], 0, 255)
-        IMGGREY = gray
+        IMGGREY = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         # analisisi citra sebelum di convolusi
         plt.imshow(IMGGREY, cmap='gray', interpolation='bicubic')
@@ -558,16 +544,7 @@ class ShowImage(QMainWindow):
         img = cv2.imread("../imgs/dumy-img-1.jpg")
 
         # ubah ke gray
-        H,W = img.shape[:2]
-        gray = np.zeros((H,W), np.uint8)
-        for i in range(H):
-            for j in range(W):
-                # mengubah citra ke greyscale
-                # f(x,y) = 0.299R + 0.587G + 0.114B
-                gray[i,j] = np.clip(0.299 * img[i, j, 0]+
-                                    0.587 * img[i, j, 1]+
-                                    0.114 * img[1, j, 2], 0, 255)
-        IMGGREY = gray
+        IMGGREY = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         # analisisi citra sebelum di convolusi
         plt.imshow(IMGGREY, cmap='gray', interpolation='bicubic')
@@ -609,16 +586,7 @@ class ShowImage(QMainWindow):
         img = cv2.imread("../imgs/salt-and-papper-img.jpg")
 
         # ubah ke gray
-        H,W = img.shape[:2]
-        gray = np.zeros((H,W), np.uint8)
-        for i in range(H):
-            for j in range(W):
-                # mengubah citra ke greyscale
-                # f(x,y) = 0.299R + 0.587G + 0.114B
-                gray[i,j] = np.clip(0.299 * img[i, j, 0]+
-                                    0.587 * img[i, j, 1]+
-                                    0.114 * img[1, j, 2], 0, 255)
-        IMGGREY = gray
+        IMGGREY = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         # analisisi citra sebelum di convolusi
         plt.imshow(IMGGREY, cmap='gray', interpolation='bicubic')
@@ -684,16 +652,7 @@ class ShowImage(QMainWindow):
         img = cv2.imread("../imgs/salt-and-papper-img.jpg")
 
         # ubah ke gray
-        H,W = img.shape[:2]
-        gray = np.zeros((H,W), np.uint8)
-        for i in range(H):
-            for j in range(W):
-                # mengubah citra ke greyscale
-                # f(x,y) = 0.299R + 0.587G + 0.114B
-                gray[i,j] = np.clip(0.299 * img[i, j, 0]+
-                                    0.587 * img[i, j, 1]+
-                                    0.114 * img[1, j, 2], 0, 255)
-        IMGGREY = gray
+        IMGGREY = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         # analisisi citra sebelum di convolusi
         plt.imshow(IMGGREY, cmap='gray', interpolation='bicubic')
@@ -714,15 +673,15 @@ class ShowImage(QMainWindow):
     
     def laplacefilter(self):
         # Load gambar
-        IMG = cv2.imread("../imgs/salt-and-papper-img.jpg")
-
-        # analisisi citra sebelum di convolusi
-        plt.imshow(IMG, cmap='gray', interpolation='bicubic')
-        plt.xticks([]), plt.yticks([])
-        plt.title('Citra Asli')
+        img = cv2.imread("../imgs/salt-and-papper-img.jpg")
 
         # ubah ke gray
-        IMGGREY = cv2.cvtColor(IMG, cv2.COLOR_BGR2GRAY)
+        IMGGREY = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        # analisisi citra sebelum di convolusi
+        plt.imshow(IMGGREY, cmap='gray', interpolation='bicubic')
+        plt.xticks([]), plt.yticks([])
+        plt.title('Citra Asli')
 
         # buat kernel
         kernel_laplace = np.array([[0, 0, -1, 0, 0],
@@ -744,6 +703,129 @@ class ShowImage(QMainWindow):
 
         plt.show()
         cv2.waitKey()
+    
+    def medianfilter(self):
+        # mengubah self.image menjadi greyscale         
+        img = cv2.imread("../imgs/salt-and-papper-img.jpg")
+
+        # ubah ke gray
+        grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        # analisisi citra sebelum di convolusi
+        plt.imshow(grey, cmap='gray', interpolation='bicubic')
+        plt.xticks([]), plt.yticks([])
+        plt.title('Citra Asli')
+
+        # Membuat citra output dengan meng-copy citra input
+        output_image = np.copy(grey)
+
+        # Mengambil ukuran citra
+        h, w = grey.shape
+
+        # Iterasi setiap piksel pada citra (kecuali tepi citra)
+        for i in range(3, h - 3):
+            for j in range(3, w - 3):
+                # Membuat list untuk menyimpan nilai tetangga piksel
+                neighbors = []
+                # Iterasi pada tetangga piksel
+                for k in range(-3, 4):
+                    for l in range(-3, 4):
+                        a = grey[i + k, j + l]
+                        neighbors.append(a)
+
+                # Mengurutkan nilai tetangga piksel
+                neighbors.sort()
+
+                # Menempatkan nilai median pada piksel output
+                median = neighbors[24]
+                output_image[i, j] = copy.deepcopy(median)
+
+        plt.figure()
+        plt.imshow(cv2.cvtColor(output_image, cv2.COLOR_BGR2RGB))
+        plt.title('Median Filter')
+        plt.xticks([]), plt.yticks([])
+
+        plt.show()
+        cv2.waitKey()
+
+    def maximumfilter(self):
+        # Baca citra
+        img = cv2.imread("../imgs/dumy-img-1.jpg")
+
+        # Konversi citra menjadi grayscale
+        grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        # menampilkan gambar asli
+        plt.imshow(grey, cmap='gray', interpolation='bicubic')
+        plt.xticks([]), plt.yticks([])
+        plt.title('Citra Asli')
+
+        # Hitung ukuran padding
+        h, w = grey.shape[:2]
+
+        # Buat temapat penampung citra keluaran dengan array 0
+        img_out = np.zeros((h, w))
+
+        # Proses Max filtering
+        for i in range(3, h - 3):
+            for j in range(3, w - 3):
+                neighbors = []
+                for k in range(-3, 4):
+                    for l in range(-3, 4):
+                        a = grey[i + k, j + l]
+                        neighbors.append(a)
+
+                # mencari nilai max dengan nilai max
+                max_val = max(neighbors)
+                # membuat nilai tengahnya menjadi nilai max
+                img_out.itemset((i, j), max_val)
+
+        plt.figure()
+        plt.imshow(img_out, cmap='gray')
+        plt.title('Max Filtered Image')
+        plt.xticks([]), plt.yticks([])
+
+        plt.show()
+
+    def minimumfilter(self):
+        # Baca citra
+        img = cv2.imread("../imgs/dumy-img-1.jpg")
+
+        # Konversi citra menjadi grayscale
+        grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        # menampilkan gambar asli
+        plt.imshow(grey, cmap='gray', interpolation='bicubic')
+        plt.xticks([]), plt.yticks([])
+        plt.title('Citra Asli')
+
+        # Hitung ukuran padding
+        h, w = grey.shape[:2]
+
+        # Buat temapat penampung citra keluaran dengan array 0
+        img_out = np.zeros((h, w))
+
+        # Proses Max filtering
+        for i in range(3, h - 3):
+            for j in range(3, w - 3):
+                neighbors = []
+                for k in range(-3, 4):
+                    for l in range(-3, 4):
+                        a = grey[i + k, j + l]
+                        neighbors.append(a)
+
+                # mencari nilai max dengan nilai max
+                max_val = min(neighbors)
+                # membuat nilai tengahnya menjadi nilai max
+                img_out.itemset((i, j), max_val)
+
+        plt.figure()
+        plt.imshow(img_out, cmap='gray')
+        plt.title('Min Filtered Image')
+        plt.xticks([]), plt.yticks([])
+
+        plt.show()
+        
 
     # mengatur gambar di windows
     def displayImage(self, windows=1):

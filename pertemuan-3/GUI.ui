@@ -333,6 +333,9 @@
     </widget>
     <addaction name="menuHighpass"/>
     <addaction name="menuLowPass"/>
+    <addaction name="actionMedian_filter"/>
+    <addaction name="actionMax_Filter"/>
+    <addaction name="actionMin_Filter"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuOperasi_Titik"/>
@@ -561,6 +564,21 @@
   <action name="actionLaplace">
    <property name="text">
     <string>Laplace</string>
+   </property>
+  </action>
+  <action name="actionMedian_filter">
+   <property name="text">
+    <string>Median filter</string>
+   </property>
+  </action>
+  <action name="actionMax_Filter">
+   <property name="text">
+    <string>Max Filter</string>
+   </property>
+  </action>
+  <action name="actionMin_Filter">
+   <property name="text">
+    <string>Min Filter</string>
    </property>
   </action>
  </widget>
