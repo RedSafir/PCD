@@ -981,7 +981,7 @@ class ShowImage(QMainWindow):
         rows, cols = img.shape
         crow, ccol = int(rows / 2), int(cols / 2)
         mask = np.zeros((rows, cols, 2), np.uint8)
-        r = 80
+        r = 80  
         center = [crow, ccol]
         x, y = np.ogrid[:rows, :cols]
         mask_area = (x - center[0]) ** 2 + (y - center[1]) ** 2 <= r * r
