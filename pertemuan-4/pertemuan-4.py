@@ -88,6 +88,7 @@ class ShowImage(QMainWindow):
         self.actionMedian_filter.triggered.connect(self.medianfilter)   
         self.actionMax_Filter.triggered.connect(self.maximumfilter)   
         self.actionMin_Filter.triggered.connect(self.minimumfilter)   
+        self.actionAll.triggered.connect(self.sharpening_all)   
 
         # Transformasi Fourier
         self.actionSmoothing.triggered.connect(self.dftsmooth)   
@@ -586,6 +587,7 @@ class ShowImage(QMainWindow):
         plt.imshow(hasil2x2, cmap='gray', interpolation='bicubic')
         plt.xticks([]), plt.yticks([])
         plt.title('Hasil Konvolusi 2x2')
+        print(hasil2x2)
 
         plt.show()
         cv2.waitKey()
@@ -616,47 +618,55 @@ class ShowImage(QMainWindow):
         plt.imshow(hasil, cmap='gray', interpolation='bicubic')
         plt.xticks([]), plt.yticks([])
         plt.title('Hasil Konvolusi gaussian')
+        print(hasil)
 
         plt.show()
         cv2.waitKey()
-    
+    def sharpening_all(self):
+        self.sharpening_i()
+        self.sharpening_ii()
+        self.sharpening_iii()
+        self.sharpening_iv()
+        self.sharpening_v()
+        self.sharpening_vi()
+
     def sharpening_i(self):
         KERNEL = np.array([[-1, -1, -1],
                             [-1, 8, -1],
                            [-1, -1, -1]])
-        self.show_sharpening(KERNEL)
+        self.show_sharpening(KERNEL, " i")
 
     def sharpening_ii(self):
         KERNEL = np.array([[-1, -1, -1],
                            [-1, 9, -1],
                            [-1, -1, -1]])
-        self.show_sharpening(KERNEL)
+        self.show_sharpening(KERNEL, " ii")
 
     def sharpening_iii(self):
         KERNEL = np.array([[0, -1, 0],
                            [-1, 5, -1],
                            [0, -1, 0]])
-        self.show_sharpening(KERNEL)
+        self.show_sharpening(KERNEL, " iii")
 
     def sharpening_iv(self):
         KERNEL = np.array([[1, -2, 1],
                            [-2, 5, -2],
                            [1, -2, 1]])
-        self.show_sharpening(KERNEL)
+        self.show_sharpening(KERNEL, " iv")
 
     def sharpening_v(self):
         KERNEL = np.array([[1, -2, 1],
                            [-2, 4, -2],
                            [1, -2, 1]])
-        self.show_sharpening(KERNEL)
+        self.show_sharpening(KERNEL, " v")
 
     def sharpening_vi(self):
         KERNEL = np.array([[0, 1, 0],
                            [1,-4, 1],
                            [0, 1, 0]])
-        self.show_sharpening(KERNEL)
+        self.show_sharpening(KERNEL, " vi")
         
-    def show_sharpening(self, KERNEL):
+    def show_sharpening(self, KERNEL, stringkarnel):
         # mengubah self.image menjadi greyscale         
         img = cv2.imread("../imgs/salt-and-papper-img.jpg")
 
@@ -675,7 +685,8 @@ class ShowImage(QMainWindow):
         plt.figure()
         plt.imshow(hasil, cmap='gray', interpolation='bicubic')
         plt.xticks([]), plt.yticks([])
-        plt.title('Hasil Konvolusi')
+        plt.title('Hasil Konvolusi' + stringkarnel)
+        print(hasil)
 
         plt.show()
         cv2.waitKey()
@@ -709,6 +720,7 @@ class ShowImage(QMainWindow):
         plt.imshow(hasil, cmap='gray', interpolation='bicubic')
         plt.xticks([]), plt.yticks([])
         plt.title('Hasil Konvolusi laplace')
+        print(hasil)
 
         plt.show()
         cv2.waitKey()
@@ -753,6 +765,7 @@ class ShowImage(QMainWindow):
         plt.imshow(cv2.cvtColor(output_image, cv2.COLOR_BGR2RGB))
         plt.title('Median Filter')
         plt.xticks([]), plt.yticks([])
+        print(output_image)
 
         plt.show()
         cv2.waitKey()
@@ -793,6 +806,7 @@ class ShowImage(QMainWindow):
         plt.imshow(img_out, cmap='gray')
         plt.title('Max Filtered Image')
         plt.xticks([]), plt.yticks([])
+        print(img_out)
 
         plt.show()
 
@@ -832,6 +846,7 @@ class ShowImage(QMainWindow):
         plt.imshow(img_out, cmap='gray')
         plt.title('Min Filtered Image')
         plt.xticks([]), plt.yticks([])
+        print(img_out)
 
         plt.show()
 
@@ -937,23 +952,28 @@ class ShowImage(QMainWindow):
     
     def SobelClicked(self):
         # load image in grayscale mode
-        img = cv2.imread('../imgs/salt-and-papper-img.jpg', cv2.IMREAD_GRAYSCALE)
+        img = cv2.imread('../imgs/dumy-img-1.jpg', cv2.IMREAD_GRAYSCALE)
+
+        # tampilkan citra lama
+        cv2.imshow("CItra Ori", img)
 
         # initialize sobel kernels
         sobelx = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
         sobely = np.array([[-1, -2, -1], [0, 0, 0], [1, 2, 1]])
 
         # apply sobel kernels to image
-        gx = self.math_konvolusi(img,  sobelx)
-        gy = self.math_konvolusi(img,  sobely)
-
+        gx = cv2.filter2D(img, -1,  sobelx)
+        gy = cv2.filter2D(img, -1,  sobely)
+        
         # calculate gradient magnitude
-        gradient = np.sqrt(gx ** 2 + gy ** 2)
+        gradient = np.sqrt((gx * gx) + (gy * gy))
+
         # normalize gradient magnitude to 0-255 range
-        gradient_norm = (gradient * 255.0 / gradient.max()).astype(np.uint8)
+        gradient_norm = ((gradient / np.max(gradient)) * 255)
 
         # display output image
         plt.imshow(gradient_norm, cmap='gray', interpolation='bicubic')
+        plt.xticks([]), plt.yticks([])
         plt.show()
 
     def PrewittClicked(self):
@@ -966,11 +986,12 @@ class ShowImage(QMainWindow):
         kernel_y = np.array([[-1, -1, -1], [0, 0, 0], [1, 1, 1]])
 
         # apply sobel kernels to image
-        gx = self.math_konvolusi(img_gray,  kernel_x)
-        gy = self.math_konvolusi(img_gray,  kernel_y)
+        gx = cv2.filter2D(img_gray, -1,  kernel_x)
+        gy = cv2.filter2D(img_gray, -1,  kernel_y)
 
         # calculate gradient magnitude
         gradient = np.sqrt(gx ** 2 + gy ** 2)
+
         # normalize gradient magnitude to 0-255 range
         gradient_norm = (gradient * 255.0 / gradient.max()).astype(np.uint8)
 
@@ -993,6 +1014,7 @@ class ShowImage(QMainWindow):
 
         # calculate gradient magnitude
         gradient = np.sqrt(gx ** 2 + gy ** 2)
+        
         # normalize gradient magnitude to 0-255 range
         gradient_norm = (gradient * 255.0 / gradient.max()).astype(np.uint8)
 
@@ -1014,18 +1036,12 @@ class ShowImage(QMainWindow):
                                        [0, 1, 2, 1, 0]])
         img_out = self.math_konvolusi(img1,  gauss)
         fig = plt.figure(figsize=(12, 12))
-        ax1 = fig.add_subplot(2, 2, 1)
-        ax1.imshow(img_out, cmap='gray')
-        ax1.title.set_text('Noise Reduction')
 
         # Step 2: Finding Gradient
         sobel_x = cv2.Sobel(img_out, cv2.CV_64F, 1, 0, ksize=3)
         sobel_y = cv2.Sobel(img_out, cv2.CV_64F, 0, 1, ksize=3)
         mag = np.sqrt(sobel_x ** 2 + sobel_y ** 2)
         theta = np.arctan2(sobel_y, sobel_x)
-        ax2 = fig.add_subplot(2, 2, 2)
-        ax2.imshow(theta, cmap='gray')
-        ax2.title.set_text('Finding Gradien')
 
         # Step 3: Non-Maximum Suppression
         angle = theta * 180. / np.pi
@@ -1060,17 +1076,14 @@ class ShowImage(QMainWindow):
                 except IndexError as e:
                     pass
         img_N = Z.astype("uint8")
-        ax3 = fig.add_subplot(2, 2, 3)
-        ax3.imshow(img_N, cmap='gray')
-        ax3.title.set_text('Non-Maximum suppression')
 
         # Step 4: Hysteresis Thresholding
-        weak = 100
+        weak = 50
         strong = 150
         for i in np.arange(H):
             for j in np.arange(W):
                 a = img_N.item(i, j)
-                if (a > weak):  # weak
+                if (weak < a < strong):  # weak
                     b = weak
                 elif (a > strong):  # strong
                     b = 255
@@ -1080,7 +1093,7 @@ class ShowImage(QMainWindow):
         img_H1 = img_N.astype("uint8")
 
         # hysteresis Thresholding eliminasi titik tepi lemah jika tidak terhubung dengan tetangga tepi kuat
-        # strong = 255
+        strong = 255
         for i in range(1, H - 1):
             for j in range(1, W - 1):
                 if (img_H1[i, j] == weak):
@@ -1092,14 +1105,25 @@ class ShowImage(QMainWindow):
                                 (img_H1[i, j + 1] == strong) or
                                 (img_H1[i - 1, j - 1] == strong) or
                                 (img_H1[i - 1, j] == strong) or
-                                (img_H1[i - 1, j + 1] == strong)):
+                                (img_H1[i - 1, j +   1] == strong)):
                             img_H1[i, j] = strong
                         else:
                             img_H1[i, j] = 0
                     except IndexError as e:
+                        print("error")
                         pass
 
         img_H2 = img_H1.astype("uint8")
+
+        ax1 = fig.add_subplot(2, 2, 1)
+        ax1.imshow(img_out, cmap='gray')
+        ax1.title.set_text('Noise Reduction')
+        ax2 = fig.add_subplot(2, 2, 2)
+        ax2.imshow(theta, cmap='gray')
+        ax2.title.set_text('Finding Gradien')
+        ax3 = fig.add_subplot(2, 2, 3)
+        ax3.imshow(img_N, cmap='gray')
+        ax3.title.set_text('Non-Maximum suppression')
         ax4 = fig.add_subplot(2, 2, 4)
         ax4.imshow(img_H2, cmap='gray')
         ax4.title.set_text('Hysterisis Thresholding')

@@ -318,6 +318,7 @@
       <addaction name="actionKarnel_iv"/>
       <addaction name="actionKarnel_v"/>
       <addaction name="actionKarnel_vi"/>
+      <addaction name="actionAll"/>
      </widget>
      <addaction name="actionKarnel1"/>
      <addaction name="actionKarnel2"/>
@@ -627,6 +628,11 @@
   <action name="actionCanny_Adge">
    <property name="text">
     <string>Canny Adge</string>
+   </property>
+  </action>
+  <action name="actionAll">
+   <property name="text">
+    <string>All</string>
    </property>
   </action>
  </widget>
