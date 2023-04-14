@@ -127,7 +127,7 @@ class ShowImage(QMainWindow):
             pass
 
         H,W = self.Image.shape[:2]
-        CONTRAS = 1 + (self.contrasSlider.value() / 100)
+        CONTRAS = (self.contrasSlider.value() / 100)
         for i in range(H):
             for j in range(W):
                 a = self.Image.item(i, j)
@@ -244,7 +244,7 @@ class ShowImage(QMainWindow):
             plt.plot(histo, color = col) 
             # mengatur batas sumbu x
             plt.xlim([0,256])
-        
+         
         # membuat visualisasi dari histogram
         plt.show()
         self.displayImage(2)
@@ -286,7 +286,7 @@ class ShowImage(QMainWindow):
         self.rotasi(90)
     
     def rotasiMin90derajat(self):
-        self.rotasi(-90)
+        self.rotasi(-90)    
 
     def rotasi45derajat(self):
         self.rotasi(45)

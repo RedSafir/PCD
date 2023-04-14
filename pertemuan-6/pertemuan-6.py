@@ -98,6 +98,25 @@ class ShowImage(QMainWindow):
         self.actionRobert.triggered.connect(self.RobertClicked)    
         self.actionCanny_Adge.triggered.connect(self.CannyClicked)    
 
+        # Morfologi
+        self.actionDilasi.triggered.connect(self.dilasi)    
+        self.actionErosi.triggered.connect(self.erosi)    
+        self.actionOpening.triggered.connect(self.opening)    
+        self.actionClosing.triggered.connect(self.closing)    
+        self.actionSkeletonize.triggered.connect(self.skeletonize) 
+
+        # Tresholding
+        self.actionBinary.triggered.connect(self.Binary) 
+        self.actionBinary_INV.triggered.connect(self.BinaryINV) 
+        self.actionTrunc.triggered.connect(self.Trunc) 
+        self.actionTo_Zero.triggered.connect(self.ToZero) 
+        self.actionGlobalTreshold.triggered.connect(self.TugasGlobalThresh) 
+        self.actionMeanTreshold.triggered.connect(self.meanThresholding) 
+        self.actionGaussianTreshold.triggered.connect(self.gaussianThresholding) 
+        self.actionOtsuTreshold.triggered.connect(self.otsuThresholding) 
+        self.actionContour.triggered.connect(self.contour) 
+           
+
     # fungsi menampilkan citra normal
     def fungsi(self):
         self.Image = cv2.imread('../imgs/dumy-img-1.jpg')
@@ -1131,6 +1150,381 @@ class ShowImage(QMainWindow):
         ax4 = fig.add_subplot(2, 2, 4)
         ax4.imshow(img_H2, cmap='gray')
         ax4.title.set_text('Hysterisis Thresholding')
+        plt.show()
+
+    def dilasi(this):
+        # Membaca citra
+        img = cv2.imread("../imgs/dumy-img-4.jpg")
+        cv2.imshow("ORI", img)
+
+        # Mengkonversi citra menjadi grayscale
+        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        # Mengkonversi citra grayscale menjadi citra biner menggunakan cv2.threshold
+        _, img_binary = cv2.threshold(img_gray, 127, 255, cv2.THRESH_BINARY)
+
+        # Inisialisasi Strel dengan menggunakan cv2.MORPH_CROSS, (5, 5)
+        strel = cv2.getStructuringElement(cv2.MORPH_CROSS, (5, 5))
+
+        # Dilasi
+        img_dilated = cv2.dilate(img_binary,strel)
+
+        cv2.imshow('Dilated Image', img_dilated)
+    
+    def erosi(this):
+        # Membaca citra
+        img = cv2.imread("../imgs/dumy-img-4.jpg")
+        cv2.imshow("ORI", img)
+
+        # Mengkonversi citra menjadi grayscale
+        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        # Mengkonversi citra grayscale menjadi citra biner menggunakan cv2.threshold
+        _, img_binary = cv2.threshold(img_gray, 127, 255, cv2.THRESH_BINARY)
+
+        # Inisialisasi Strel dengan menggunakan cv2.MORPH_CROSS, (5, 5)
+        strel = cv2.getStructuringElement(cv2.MORPH_CROSS, (5, 5))
+
+        # Erosi
+        img_dilated = cv2.erode(img_binary,strel)
+
+        cv2.imshow('Dilated Image', img_dilated)
+    
+    def opening(this):
+        # Membaca citra
+        img = cv2.imread("../imgs/dumy-img-4.jpg")
+        cv2.imshow("ORI", img)
+
+        # Mengkonversi citra menjadi grayscale
+        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        # Mengkonversi citra grayscale menjadi citra biner menggunakan cv2.threshold
+        _, img_binary = cv2.threshold(img_gray, 127, 255, cv2.THRESH_BINARY)
+
+        # Inisialisasi Strel dengan menggunakan cv2.MORPH_CROSS, (5, 5)
+        strel = cv2.getStructuringElement(cv2.MORPH_CROSS, (5, 5))
+        
+        # MORPH OPEN untuk erosi -> dilasi
+        img_open = cv2.morphologyEx(img_binary, cv2.MORPH_OPEN, strel)
+
+        cv2.imshow('Opening Image', img_open)
+
+    def closing(this):
+        # Membaca citra
+        img = cv2.imread("../imgs/dumy-img-4.jpg")
+        cv2.imshow("ORI", img)
+
+        # Mengkonversi citra menjadi grayscale
+        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        # Mengkonversi citra grayscale menjadi citra biner menggunakan cv2.threshold
+        _, img_binary = cv2.threshold(img_gray, 127, 255, cv2.THRESH_BINARY)
+
+        # Inisialisasi Strel dengan menggunakan cv2.MORPH_CROSS, (5, 5)
+        strel = cv2.getStructuringElement(cv2.MORPH_CROSS, (5, 5))
+
+        # MORPH CLOSE untuk dilasi -> erosi
+        img_open = cv2.morphologyEx(img_binary, cv2.MORPH_CLOSE, strel)
+
+        cv2.imshow('Opening Image', img_open)
+
+    def skeletonize(this):
+        # Membaca citra
+        img = cv2.imread("../imgs/dumy-img-4.jpg")
+        cv2.imshow("ORI", img)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        # melakukan thresholding untuk mendapatkan citra biner
+        ret, thresh = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+
+        # melakukan operasi skeletonizing
+        size = np.size(thresh)
+        skel = np.zeros(thresh.shape, np.uint8)
+        element = cv2.getStructuringElement(cv2.MORPH_CROSS, (3,3))
+
+        # Mengulangi proses erosi dan dilasi hingga citra tidak berubah lagi
+        while True:
+            erode = cv2.erode(thresh, element)
+            temp = cv2.dilate(erode, element)
+            temp = cv2.subtract(thresh, temp)
+            skel = cv2.bitwise_or(skel, temp)
+            thresh = erode.copy()
+
+            zeros = size - cv2.countNonZero(thresh)
+            if zeros == size:
+                break
+
+        cv2.imshow("Skeletonize", skel)
+    
+    def Binary(self):
+        # Membaca citra
+        img = cv2.imread("../imgs/dumy-img-4.jpg")
+
+        # Mengkonversi citra menjadi grayscale
+        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        T = 127 #nilai ambang
+        max = 255 #nilai derajat keabuan
+        ret, thresh = cv2.threshold(img_gray,T,max, cv2.THRESH_BINARY)
+        plt.figure()
+
+        plt.subplot(121)
+        plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        plt.title("Original Image")
+
+        plt.subplot(122)
+        plt.imshow(thresh, cmap='gray')
+        plt.title("Binary Image")
+
+        plt.tight_layout()
+        plt.show()
+    
+    def BinaryINV(self):
+        # Membaca citra
+        img = cv2.imread("../imgs/dumy-img-4.jpg")
+
+        # Mengkonversi citra menjadi grayscale
+        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        T = 127 #nilai ambang
+        max = 255 #nilai derajat keabuan
+        ret, thresh = cv2.threshold(img_gray,T,max, cv2.THRESH_BINARY_INV)
+        plt.figure()
+
+        plt.subplot(121)
+        plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        plt.title("Original Image")
+
+        plt.subplot(122)
+        plt.imshow(thresh, cmap='gray')
+        plt.title("Binary Invers Image")
+
+        plt.tight_layout()
+        plt.show()
+
+    def Trunc(self):
+        # Membaca citra
+        img = cv2.imread("../imgs/dumy-img-4.jpg")
+
+        # Mengkonversi citra menjadi grayscale
+        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        T = 127 #nilai ambang
+        max = 255 #nilai derajat keabuan
+        ret, thresh = cv2.threshold(img_gray,T,max, cv2.THRESH_TRUNC)
+        plt.figure()
+
+        plt.subplot(121)
+        plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        plt.title("Original Image")
+
+        plt.subplot(122)
+        plt.imshow(thresh, cmap='gray')
+        plt.title("Trunc Image")
+
+        plt.tight_layout()
+        plt.show()
+
+    def ToZero(self):
+        # Membaca citra
+        img = cv2.imread("../imgs/dumy-img-4.jpg")
+
+        # Mengkonversi citra menjadi grayscale
+        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        T = 127 #nilai ambang
+        max = 255 #nilai derajat keabuan
+        ret, thresh = cv2.threshold(img_gray,T,max, cv2.THRESH_TOZERO)
+        plt.figure()
+
+        plt.subplot(121)
+        plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        plt.title("Original Image")
+
+        plt.subplot(122)
+        plt.imshow(thresh, cmap='gray')
+        plt.title("To Zero Image")
+
+        plt.tight_layout()
+        plt.show()
+
+    def ToZeroINV(self):
+        # Membaca citra
+        img = cv2.imread("../imgs/dumy-img-4.jpg")
+
+        # Mengkonversi citra menjadi grayscale
+        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        T = 127 #nilai ambang
+        max = 255 #nilai derajat keabuan
+        ret, thresh = cv2.threshold(img_gray,T,max, cv2.THRESH_TOZERO_INV)
+        plt.figure()
+
+        plt.subplot(121)
+        plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        plt.title("Original Image")
+
+        plt.subplot(122)
+        plt.imshow(thresh, cmap='gray')
+        plt.title("To Zero Invers Image")
+
+        plt.tight_layout()
+        plt.show()
+    
+    def TugasGlobalThresh(self):
+        img_matrix = np.array([
+            [3, 0, 1, 5],
+            [7, 6, 0, 4],
+            [2, 7, 0, 6],
+            [1, 3, 5, 5]
+        ], dtype=np.uint8)
+
+        T = 4
+        max_val = 7
+
+        _, thresh_binary = cv2.threshold(img_matrix, T, max_val, cv2.THRESH_BINARY)
+        _, thresh_binary_inv = cv2.threshold(img_matrix, T, max_val, cv2.THRESH_BINARY_INV)
+        _, thresh_trunc = cv2.threshold(img_matrix, T, max_val, cv2.THRESH_TRUNC)
+        _, thresh_to_zero = cv2.threshold(img_matrix, T, max_val, cv2.THRESH_TOZERO)
+        _, thresh_to_zero_inv = cv2.threshold(img_matrix, T, max_val, cv2.THRESH_TOZERO_INV)
+
+        print("Original Matrix:")
+        print(img_matrix)
+        print("\nBinary Threshold:")
+        print(thresh_binary)
+        print("\nBinary Inverse Threshold:")
+        print(thresh_binary_inv)
+        print("\nTruncated Threshold:")
+        print(thresh_trunc)
+        print("\nThreshold to Zero:")
+        print(thresh_to_zero)
+        print("\nThreshold to Zero Inverse:")
+        print(thresh_to_zero_inv)
+    
+    def meanThresholding(self):
+        img = cv2.imread("../imgs/dumy-img-4.jpg")
+        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        print("piksel awal", img)
+        thresh = cv2.adaptiveThreshold(img_gray,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY,3,2)
+        plt.figure()
+
+        plt.subplot(121)
+        plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        plt.title("Original Image")
+
+        plt.subplot(122)
+        plt.imshow(thresh, cmap='gray')
+        plt.title(" Mean Thresholding Image")
+        print("piksel thresh", thresh)
+        plt.tight_layout()
+        plt.show()
+    
+    def gaussianThresholding(self):
+        img = cv2.imread("../imgs/dumy-img-4.jpg")
+        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        print("piksel awal", img)
+        thresh = cv2.adaptiveThreshold(img_gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 3, 2)
+        plt.figure()
+
+        plt.subplot(121)
+        plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        plt.title("Original Image")
+
+        plt.subplot(122)
+        plt.imshow(thresh, cmap='gray')
+        plt.title(" Gaussian Thresholding Image")
+        print("piksel thresh", thresh)
+        plt.tight_layout()
+        plt.show()
+    
+    def otsuThresholding(self):
+        img = cv2.imread("../imgs/dumy-img-4.jpg")
+        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        print("piksel awal", img)
+        T =130
+        ret ,thresh = cv2.threshold(img_gray, T,255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+        plt.figure()
+
+        plt.subplot(121)
+        plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        plt.title("Original Image")
+
+        plt.subplot(122)
+        plt.imshow(thresh, cmap='gray')
+        plt.title(" Otsu Thresholding Image")
+        print("piksel thresh", thresh)
+        plt.tight_layout()
+        plt.show()
+    
+    def contour(self):
+        # Membaca citra
+        img = cv2.imread("../imgs/dumy-contour.jpg")
+
+        # Mengkonversi citra menjadi grayscale
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        # Threshold citra dengan nilai T=127
+        _, thresh = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+
+        # Ekstrak kontur
+        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+
+        # Loop untuk setiap kontur
+        for i, cnt in enumerate(contours):
+            # Get approximate polygon
+            epsilon = 0.01 * cv2.arcLength(cnt, True)
+            approx = cv2.approxPolyDP(cnt, epsilon, True)
+
+            # Menentukan titik tengah kontur
+            M = cv2.moments(cnt)
+            cX = int(M["m10"] / M["m00"])
+            cY = int(M["m01"] / M["m00"])
+
+            # cek jika poligon dengan 4 sisi
+            if len(approx) == 4:
+                # hitung panjang dan lebar
+                x, y, w, h = cv2.boundingRect(cnt)
+                if abs(w - h) < 10:  # jika selisih antara panjang dan lebar kurang dari 10 pixel, maka persegi
+                    shape = "square"
+                else:
+                    shape = "rectangle"
+            elif len(approx) == 3:
+                shape = "triangle"
+            elif len(approx) == 5 or len(approx) == 10:  # tambahkan kondisi untuk bintang dengan 10 sisi
+                # Dapatkan pusat massa atau centroid
+                M = cv2.moments(cnt)
+                cX = int(M["m10"] / M["m00"])
+                cY = int(M["m01"] / M["m00"])
+
+                # Dapatkan jarak antara titik sudut ke centroid
+                distances = []
+                for j in range(len(approx)):
+                    dist = np.sqrt((approx[j][0][0] - cX) ** 2 + (approx[j][0][1] - cY) ** 2)
+                    distances.append(dist)
+
+                # Ambil rasio antara jarak maksimum dengan rata-rata jarak
+                max_dist = max(distances)
+                avg_dist = sum(distances) / len(approx)
+                ratio = max_dist / avg_dist
+
+                # Jika rasio lebih kecil dari 1.9, maka bintang
+                if ratio < 1.9:
+                    shape = "star"
+                else:
+                    shape = "pentagon"
+            else:
+                shape = "circle"
+
+            # Menandai atau memberikan label pada setiap kontur
+            cv2.drawContours(img, [approx], -1, (0, 255, 0), 2)
+            cv2.putText(img, shape, (cX, cY), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
+
+        plt.figure(figsize=(12, 6))
+
+        plt.subplot(121)
+        plt.imshow(cv2.cvtColor(gray, cv2.COLOR_BGR2RGB))
+        plt.title("Grayscale Image")
+
+        plt.subplot(122)
+        plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        plt.title("Image with Contours ")
+
+        plt.tight_layout()
         plt.show()
 
     # mengatur gambar di windows

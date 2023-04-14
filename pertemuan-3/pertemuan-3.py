@@ -581,7 +581,7 @@ class ShowImage(QMainWindow):
         plt.show()
         cv2.waitKey()
 
-    def gaussianfilter(self):
+    def gaussianfilter(self):   
         # Load gambar
         img = cv2.imread("../imgs/salt-and-papper-img.jpg")
 
