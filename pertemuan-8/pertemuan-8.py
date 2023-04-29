@@ -115,7 +115,10 @@ class ShowImage(QMainWindow):
         self.actionGaussianTreshold.triggered.connect(self.gaussianThresholding) 
         self.actionOtsuTreshold.triggered.connect(self.otsuThresholding) 
         self.actionContour.triggered.connect(self.contour) 
-           
+
+        # Color Processing
+        self.actionColor_Tracking.triggered.connect(self.colortracking) 
+        self.actionColor_Picker.triggered.connect(self.colorpicker) 
 
     # fungsi menampilkan citra normal
     def fungsi(self):
@@ -1526,6 +1529,112 @@ class ShowImage(QMainWindow):
         # Menampilkan plot
         plt.show()
     
+    def colortracking(self):
+        # Membuka kamera (webcam) dengan index 0
+        cam = cv2.VideoCapture(0)
+
+        # Loop utama, berjalan terus menerus hingga diberhentikan
+        while True:
+            # Membaca frame dari kamera dan menyimpannya dalam variabel frame
+            _, frame = cam.read()
+
+            # Mengkonversi frame dari ruang warna BGR ke ruang warna HSV
+            hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+            # Mengatur rentang warna biru yang akan dideteksi
+            low_blue = np.array([100, 100, 100])
+            high_blue = np.array([120, 255, 255])
+            blue_mask = cv2.inRange(hsv_frame, low_blue, high_blue)
+            blue = cv2.bitwise_and(frame, frame, mask=blue_mask)
+
+            # Mengatur rentang warna merah yang akan dideteksi
+            low_red = np.array([0, 155, 84])
+            high_red = np.array([3, 255, 255])
+            red_mask = cv2.inRange(hsv_frame, low_red, high_red)
+            red = cv2.bitwise_and(frame, frame, mask=red_mask)
+
+            # Mengatur rentang warna hijau yang akan dideteksi
+            low_green = np.array([50, 100, 100])
+            high_green = np.array([70, 255, 255])
+            green_mask = cv2.inRange(hsv_frame, low_green, high_green)
+            green = cv2.bitwise_and(frame, frame, mask=green_mask)
+
+            # Mengatur rentang warna yang akan dideteksi (semua warna kecuali putih)
+            low = np.array([0, 42, 0])
+            high = np.array([179, 255, 255])
+            mask = cv2.inRange(hsv_frame, low, high)
+            result = cv2.bitwise_and(frame, frame, mask=mask)
+
+            # Menampilkan frame asli dan hasil deteksi warna pada jendela yang berbeda
+            cv2.imshow("Frame", frame)
+            cv2.imshow("Biru", blue)
+            cv2.imshow("Merah", red)
+            cv2.imshow("Hijau", green)
+            cv2.imshow("Hasil", result)
+
+            # Menunggu input pengguna, jika tombol 'Esc' ditekan, maka keluar dari loop
+            key = cv2.waitKey(1)
+            if key == 27:
+                break
+
+        # Melepaskan kamera dan menutup semua jendela yang terbuka
+        cam.release()
+        cv2.destroyAllWindows()
+
+    def nothing(self, x):
+        pass  # Fungsi kosong sebagai placeholder untuk trackbar callback
+
+    def colorpicker(self):
+        cam = cv2.VideoCapture(0)  # Membuka kamera
+        cv2.namedWindow("Trackbars")  # Membuat jendela bernama "Trackbars"
+
+        # Membuat trackbar untuk mengatur nilai lower Hue, Saturation, dan Value
+        cv2.createTrackbar("L-H", "Trackbars", 0, 179, self.nothing)
+        cv2.createTrackbar("L-S", "Trackbars", 0, 255, self.nothing)
+        cv2.createTrackbar("L-V", "Trackbars", 0, 255, self.nothing)
+
+        # Membuat trackbar untuk mengatur nilai upper Hue, Saturation, dan Value
+        cv2.createTrackbar("U-H", "Trackbars", 179, 179, self.nothing)
+        cv2.createTrackbar("U-S", "Trackbars", 255, 255, self.nothing)
+        cv2.createTrackbar("U-V", "Trackbars", 255, 255, self.nothing)
+
+        while True:
+            # Membaca frame dari kamera
+            _, frame = cam.read()
+            # Mengkonversi frame dari BGR ke HSV
+            hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+            # Mendapatkan posisi trackbar untuk lower Hue, Saturation, dan Value
+            l_h = cv2.getTrackbarPos("L-H", "Trackbars")
+            l_s = cv2.getTrackbarPos("L-S", "Trackbars")
+            l_v = cv2.getTrackbarPos("L-V", "Trackbars")
+
+            # Mendapatkan posisi trackbar untuk upper Hue, Saturation, dan Value
+            u_h = cv2.getTrackbarPos("U-H", "Trackbars")
+            u_s = cv2.getTrackbarPos("U-S", "Trackbars")
+            u_v = cv2.getTrackbarPos("U-V", "Trackbars")
+
+            # Membuat array numpy untuk lower dan upper color range
+            lower_color = np.array([l_h, l_s, l_v])
+            upper_color = np.array([u_h, u_s, u_v])
+
+            # Membuat mask dengan menggunakan lower dan upper color range
+            mask = cv2.inRange(hsv, lower_color, upper_color)
+
+            # Menggabungkan frame asli dengan mask untuk mendapatkan hasil
+            result = cv2.bitwise_and(frame, frame, mask=mask)
+
+            # Menampilkan frame asli, mask, dan hasil
+            cv2.imshow("frame", frame)
+            cv2.imshow("mask", mask)
+            cv2.imshow("result", result)
+
+            key = cv2.waitKey(1)  # Menunggu tombol ditekan
+            if key == 27:  # Jika tombol 'Esc' ditekan, keluar dari loop
+                break
+
+        cam.release()  # Menutup kamera
+        cv2.destroyAllWindows()  # Menutup semua jendela OpenCV
 
     # mengatur gambar di windows
     def displayImage(self, windows=1):
