@@ -1157,7 +1157,7 @@ class ShowImage(QMainWindow):
 
     def dilasi(this):
         # Membaca citra
-        img = cv2.imread("../imgs/dumy-img-4.jpg")
+        img = cv2.imread("../imgs/dumy-img-3.jpg")
         cv2.imshow("ORI", img)
 
         # Mengkonversi citra menjadi grayscale
@@ -1176,7 +1176,7 @@ class ShowImage(QMainWindow):
     
     def erosi(this):
         # Membaca citra
-        img = cv2.imread("../imgs/dumy-img-4.jpg")
+        img = cv2.imread("../imgs/dumy-img-3.jpg")
         cv2.imshow("ORI", img)
 
         # Mengkonversi citra menjadi grayscale
@@ -1195,7 +1195,7 @@ class ShowImage(QMainWindow):
     
     def opening(this):
         # Membaca citra
-        img = cv2.imread("../imgs/dumy-img-4.jpg")
+        img = cv2.imread("../imgs/dumy-img-3.jpg")
         cv2.imshow("ORI", img)
 
         # Mengkonversi citra menjadi grayscale
@@ -1214,7 +1214,7 @@ class ShowImage(QMainWindow):
 
     def closing(this):
         # Membaca citra
-        img = cv2.imread("../imgs/dumy-img-4.jpg")
+        img = cv2.imread("../imgs/dumy-img-3.jpg")
         cv2.imshow("ORI", img)
 
         # Mengkonversi citra menjadi grayscale
@@ -1233,7 +1233,7 @@ class ShowImage(QMainWindow):
 
     def skeletonize(this):
         # Membaca citra
-        img = cv2.imread("../imgs/dumy-img-4.jpg")
+        img = cv2.imread("../imgs/dumy-img-3.jpg")
         cv2.imshow("ORI", img)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -1261,7 +1261,7 @@ class ShowImage(QMainWindow):
     
     def Binary(self):
         # Membaca citra
-        img = cv2.imread("../imgs/dumy-img-4.jpg")
+        img = cv2.imread("../imgs/dumy-img-3.jpg")
 
         # Mengkonversi citra menjadi grayscale
         img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -1283,7 +1283,7 @@ class ShowImage(QMainWindow):
     
     def BinaryINV(self):
         # Membaca citra
-        img = cv2.imread("../imgs/dumy-img-4.jpg")
+        img = cv2.imread("../imgs/dumy-img-3.jpg")
 
         # Mengkonversi citra menjadi grayscale
         img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -1304,8 +1304,9 @@ class ShowImage(QMainWindow):
         plt.show()
 
     def Trunc(self):
+        # yang lebih jadi batas, yang kurang di biarkan
         # Membaca citra
-        img = cv2.imread("../imgs/dumy-img-4.jpg")
+        img = cv2.imread("../imgs/dumy-img-3.jpg")
 
         # Mengkonversi citra menjadi grayscale
         img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -1327,7 +1328,7 @@ class ShowImage(QMainWindow):
 
     def ToZero(self):
         # Membaca citra
-        img = cv2.imread("../imgs/dumy-img-4.jpg")
+        img = cv2.imread("../imgs/dumy-img-3.jpg")
 
         # Mengkonversi citra menjadi grayscale
         img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -1349,7 +1350,7 @@ class ShowImage(QMainWindow):
 
     def ToZeroINV(self):
         # Membaca citra
-        img = cv2.imread("../imgs/dumy-img-4.jpg")
+        img = cv2.imread("../imgs/dumy-img-3.jpg")
 
         # Mengkonversi citra menjadi grayscale
         img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -1400,7 +1401,7 @@ class ShowImage(QMainWindow):
         print(thresh_to_zero_inv)   
     
     def meanThresholding(self):
-        img = cv2.imread("../imgs/dumy-img-4.jpg")
+        img = cv2.imread("../imgs/dumy-img-3.jpg")
         img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         print("piksel awal", img)
         thresh = cv2.adaptiveThreshold(img_gray,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY,3,2)
@@ -1418,7 +1419,7 @@ class ShowImage(QMainWindow):
         plt.show()
     
     def gaussianThresholding(self):
-        img = cv2.imread("../imgs/dumy-img-4.jpg")
+        img = cv2.imread("../imgs/dumy-img-3.jpg")
         img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         print("piksel awal", img)
         thresh = cv2.adaptiveThreshold(img_gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 3, 2)
@@ -1436,7 +1437,7 @@ class ShowImage(QMainWindow):
         plt.show()
     
     def otsuThresholding(self):
-        img = cv2.imread("../imgs/dumy-img-4.jpg")
+        img = cv2.imread("../imgs/dumy-img-3.jpg")
         img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         print("piksel awal", img)
         T =130
