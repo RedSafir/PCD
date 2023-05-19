@@ -1483,7 +1483,7 @@ class ShowImage(QMainWindow):
 
             # Menentukan titik tengah kontur
             M = cv2.moments(cnt)
-            cX = int(M["m10"] / M["m00"])
+            cX = int(M["m10"] / M["m00"])   
             cY = int(M["m01"] / M["m00"])
 
             # Cek bentuk berdasarkan jumlah sisi poligon

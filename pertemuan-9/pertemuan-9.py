@@ -1558,7 +1558,7 @@ class ShowImage(QMainWindow):
             blue = cv2.bitwise_and(frame, frame, mask=blue_mask)
 
             # Mengatur rentang warna merah yang akan dideteksi
-            low_red = np.array([0, 155, 84])
+            low_red = np.array( )
             high_red = np.array([3, 255, 255])
             red_mask = cv2.inRange(hsv_frame, low_red, high_red)
             red = cv2.bitwise_and(frame, frame, mask=red_mask)
@@ -1640,7 +1640,7 @@ class ShowImage(QMainWindow):
             cv2.imshow("result", result)
 
             key = cv2.waitKey(1)  # Menunggu tombol ditekan
-            if key == 27:  # Jika tombol 'Esc' ditekan, keluar dari loop
+            if key == 27:  # Jika tombol 'Esc' ditekan, keluar dari loop    
                 break
 
         cam.release()  # Menutup kamera
@@ -1741,11 +1741,15 @@ class ShowImage(QMainWindow):
 
     def CircleHough(self):
         img = cv2.imread('cv.png', 0)
+        #  Melakukan penghalusan pada citra menggunakan filter median blur dengan ukuran kernel 5x5.
         img = cv2.medianBlur(img, 5)
         cimg = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+        # param1 : tereshold canny edge
+        # param2 : treshold minimum
         circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 1, 20,
                                    param1=50, param2=30, minRadius=0, maxRadius=0)
         circles = np.uint16(np.around(circles))
+        # Melakukan loop untuk menggambar lingkaran dan titik pusat lingkaran yang terdeteksi.
         for i in circles[0, :]:
             # draw the outer circle
             cv2.circle(cimg, (i[0], i[1]), i[2], (0, 255, 0), 2)

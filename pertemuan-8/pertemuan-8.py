@@ -22,6 +22,7 @@ import math
 import tkinter as tk
 from tkinter import filedialog
 import copy
+import imutils
 
 class ShowImage(QMainWindow):
     def __init__(self):
@@ -771,7 +772,7 @@ class ShowImage(QMainWindow):
             for j in range(3, w - 3):
                 # Membuat list untuk menyimpan nilai tetangga piksel
                 neighbors = []
-                # Iterasi pada tetangga piksel
+                # Iterasi pada tetangga piksel  
                 for k in range(-3, 4):
                     for l in range(-3, 4):
                         a = grey[i + k, j + l]
@@ -1586,7 +1587,17 @@ class ShowImage(QMainWindow):
         pass  # Fungsi kosong sebagai placeholder untuk trackbar callback
 
     def colorpicker(self):
-        cam = cv2.VideoCapture(0)  # Membuka kamera
+        frame = cv2.imread("../imgs/tmt-mentah-1.jpg")  # Membuka kamera
+
+        hist, bins = np.histogram(frame.flatten(), 256, [0, 256]) #mengubah array img menjadi 1 dimensi
+        cdf = hist.cumsum() # menentukan jumlah kumulatif array pada bagian tertentu
+        cdf_normalized = cdf * hist.max() / cdf.max() # untuk normalisasi
+        cdf_m = np.ma.masked_equal(cdf, 0) # memasking nilai array dengan yang di berikan
+        cdf_m = (cdf_m - cdf_m.min()) * 255 / (cdf_m.max() - cdf_m.min()) # melakukan perhitungan
+        cdf = np.ma.filled(cdf_m, 0).astype('uint8') # mengisi array dengan nilai skalar
+        frame = cdf[frame] # mengganti nilai array image menjadi nilai komulatif
+        
+        frame = imutils.resize(frame, width=400, height=400)
         cv2.namedWindow("Trackbars")  # Membuat jendela bernama "Trackbars"
 
         # Membuat trackbar untuk mengatur nilai lower Hue, Saturation, dan Value
@@ -1601,7 +1612,7 @@ class ShowImage(QMainWindow):
 
         while True:
             # Membaca frame dari kamera
-            _, frame = cam.read()
+            # _, frame = cam.read()
             # Mengkonversi frame dari BGR ke HSV
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
@@ -1630,11 +1641,11 @@ class ShowImage(QMainWindow):
             cv2.imshow("mask", mask)
             cv2.imshow("result", result)
 
-            key = cv2.waitKey(1)  # Menunggu tombol ditekan
-            if key == 27:  # Jika tombol 'Esc' ditekan, keluar dari loop
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord("q"):
                 break
 
-        cam.release()  # Menutup kamera
+        # cam.release()  # Menutup kamera
         cv2.destroyAllWindows()  # Menutup semua jendela OpenCV
 
     # mengatur gambar di windows
